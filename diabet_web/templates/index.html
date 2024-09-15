@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diatakip - Diyabet Tespit Sistemi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Diatakip</h1>
+        <h2>Diyabet Tespit Sistemi</h2>
+        <form id="diabetes-form">
+            <div class="form-group">
+                <label for="Hamilelik_Sayisi">Hamilelik Sayısı:</label>
+                <input type="number" id="Hamilelik_Sayisi" name="Hamilelik_Sayisi" placeholder="0-20 arası" min="0" max="20" required>
+                <small>Önerilen Aralık: 0 - 20</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Kan_Sekeri">Kan Şekeri:</label>
+                <input type="number" id="Kan_Sekeri" name="Kan_Sekeri" placeholder="0-200 mg/dL" min="0" max="200" required>
+                <small>Önerilen Aralık: 0 - 200 mg/dL</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Tansiyon">Tansiyon:</label>
+                <input type="number" id="Tansiyon" name="Tansiyon" placeholder="0-200 mmHg" min="0" max="200" required>
+                <small>Önerilen Aralık: 0 - 200 mmHg</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Cilt_Kalinligi">Cilt Kalınlığı:</label>
+                <input type="number" id="Cilt_Kalinligi" name="Cilt_Kalinligi" placeholder="0-100 mm" min="0" max="100" required>
+                <small>Önerilen Aralık: 0 - 100 mm</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Insulin">Insulin:</label>
+                <input type="number" id="Insulin" name="Insulin" placeholder="0-1000 µU/mL" min="0" max="1000" required>
+                <small>Önerilen Aralık: 0 - 1000 µU/mL</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Vucut_Kitle_Indeksi">Vücut Kitle İndeksi:</label>
+                <input type="number" id="Vucut_Kitle_Indeksi" name="Vucut_Kitle_Indeksi" placeholder="0-80 kg/m²" min="0" max="80" required>
+                <small>Önerilen Aralık: 0 - 80 kg/m²</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Diyabet_Soyagaci_Fonksiyonu">Diyabet Soyagacı Fonksiyonu:</label>
+                <input type="number" id="Diyabet_Soyagaci_Fonksiyonu" name="Diyabet_Soyagaci_Fonksiyonu" placeholder="0-3.00" min="0" max="3.00" step="0.01" required>
+                <small>Önerilen Aralık: 0 - 3.00</small>
+            </div>
+
+            <div class="form-group">
+                <label for="Yas">Yaş:</label>
+                <input type="number" id="Yas" name="Yas" placeholder="18-100 yıl" min="18" max="100" required>
+                <small>Önerilen Aralık: 18 - 100 yıl</small>
+            </div>
+
+            <button type="submit" class="submit-button">Tespit Et</button>
+        </form>
+    </div>
+
+    <!-- Popup for results -->
+    <div id="result-popup" class="popup">
+        <div class="popup-content">
+            <span class="close-btn">&times;</span>
+            <p id="result-message">Sonuç burada görüntülenecek.</p>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#diabetes-form').submit(function(event) {
+                event.preventDefault(); // Formun normal submit işlemini durdurur
+
+                // Form verilerini toplar
+                var formData = $(this).serialize();
+
+                $.ajax({
+                    url: '/predict', // Flask backend endpoint
+                    type: 'POST',
+                    data: formData,
+                    success: function(response) {
+                        // Popup'u günceller ve gösterir
+                        $('#result-message').text(response.result);
+                        $('#result-popup').show();
+                    },
+                    error: function() {
+                        $('#result-message').text('Bir hata oluştu.');
+                        $('#result-popup').show();
+                    }
+                });
+            });
+
+            // Popup kapama işlemi
+            $('.close-btn').click(function() {
+                $('#result-popup').hide();
+            });
+        });
+    </script>
+</body>
+</html>
